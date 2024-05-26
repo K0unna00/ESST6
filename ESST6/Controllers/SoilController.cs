@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ESST6.Controllers
 {
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class SoilController : ControllerBase
     {
