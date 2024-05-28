@@ -19,5 +19,7 @@ public class AppDBContext : IdentityDbContext<AppUser, IdentityRole, string>
 
     public DbSet<BatteryVM> Batteries { get; set; }
 
+    public DbSet<DashboardVM> Dashboards { get; set; }
+
 
 }

@@ -101,16 +101,16 @@ public class AccountController : ControllerBase
         return Ok("Password reset successfully");
     }
 
-    [Authorize]
-    [HttpGet("getProfileData")]
-    public async Task<IActionResult> GetProfileData()
+    //[Authorize]
+    [HttpPost("getProfileData")]
+    public async Task<IActionResult> GetProfileData([FromBody] string userId)
     {
-        var user = await _userManager.FindByIdAsync(_identityHelper.GetCurrentUserId());
+        var user = await _userManager.FindByIdAsync(userId);
 
         //dynamic obj = new ExpandoObject();
 
         (string, string, string, string) obj = (user.UserName, user.PhoneNumber, user.Email, user.Id);
 
-        return Ok(obj);
+        return Ok(user);
     }
 }
