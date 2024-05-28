@@ -4,5 +4,5 @@ namespace ESST6.Model;
 
 public class AppUser : IdentityUser
 {
-    
+
 }

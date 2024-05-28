@@ -1,19 +1,28 @@
-﻿using ESST6.Model;
+﻿using ESST6.Helpers;
+using ESST6.Model;
+using ESST6.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Dynamic;
+using System.Security.Claims;
 namespace ESST6.Controllers;
 
 [Route("[controller]")]
 [ApiController]
 public class AccountController : ControllerBase
 {
+    private readonly IdentityHelper _identityHelper;
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly ITokenService _tokenService;
 
-    public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+    public AccountController(IdentityHelper identityHelper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenService tokenService)
     {
-        _userManager = userManager;
+        _identityHelper = identityHelper;
         _signInManager = signInManager;
+        _tokenService = tokenService;
+        _userManager = userManager;
     }
 
     [HttpPost("register")]
@@ -45,7 +54,11 @@ public class AccountController : ControllerBase
             return Unauthorized("Invalid login attempt");
         }
 
-        return Ok("User logged in successfully");
+        var user = await _userManager.GetUserAsync(User);
+
+        //var token = _tokenService.GenerateToken();
+
+        return Ok(new { Token = user.Id });
     }
 
     [HttpPost("logout")]
@@ -86,5 +99,18 @@ public class AccountController : ControllerBase
         }
 
         return Ok("Password reset successfully");
+    }
+
+    [Authorize]
+    [HttpGet("getProfileData")]
+    public async Task<IActionResult> GetProfileData()
+    {
+        var user = await _userManager.FindByIdAsync(_identityHelper.GetCurrentUserId());
+
+        //dynamic obj = new ExpandoObject();
+
+        (string, string, string, string) obj = (user.UserName, user.PhoneNumber, user.Email, user.Id);
+
+        return Ok(obj);
     }
 }
